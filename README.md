@@ -28,7 +28,7 @@ I used the Netbeans IDE to write, compile, and execute my program. Therefore, th
 
 5. You will be prompt to enter the file directory in which you download the CSV file to. Note that the bad csv file, log file, and database file will all be created and stored in that same file directory.
 
-To run on command line: //jar file is update every time after the program being compiled.
+To run on command line: (jar file is update every time after the program being compiled.)
 
 Simply go to the dist file located in the Netbeans project folder by using the cd to get to that file directory.
 Then use the command: "java -jar Coding_Challenge.jar"
@@ -40,5 +40,19 @@ For example.
 
 C. Overview of approach, design choices, and assumptions.
 
+I read the requirements of the program and began write two algorithms on a piece of paper.
 
+   SQLite Algorithm:
+    Create database -> Create table
+   CSV Read and Write Algorithm
+    Read CSV File -> Parse Data -> Check Data
+    -> Valid Data, False Data -> Insert into DB table, Write line to bad CSV
 
+From these algorithms, I created two classes, SQLite_DB and CSV_RW. The first to handle the SQLite portion of the program and the second to handle reading and writing to CSV files as well as my log file.
+
+Due to my unfamiliarity with SQLite Databases, I began to conduct research by googling SQLite Databases using Java.
+There I came across the site https://www.javatpoint.com/java-sqlite which I used as a reference to writing the code the SQLite and made modifications as to work for this particular program. 
+
+For the CSV portion, I open the file on Notepad++ to see what it contained in terms of data. For optmization, I decided to read the file line by line as it contained several rows of data. Moreover, I noticed that the 5th column had "" marks around the data. With this in mind, I could not just parse the data in one shot using the split(",",10) I had to do it in steps. I would split(",",5) so that the last index of the first array contained the rest of the data. I would do perform one more split ("\"",3) to separate the 5th column from the remaining data. Then carry out one last split (",",6) to parse the rest of the data. By performing the split method three times, I would have three arrays; therefore, I decided to form one from the three so I could just pass one to the insert method to insert the data to its corresponding column in the SQLite Database table. Each time I parse the data, I would check that the data was valid prior to calling the insert method if not the entire line would be written to a bad CSV. With that being said I implement two counts one for successful and one for failed. Each count would increment depending on the case. At the end they would be added to receive the total number of records and each count including the total would be written to a log file.
+
+Upon testing my program multiple times, I noticed that if the SQLite DB file existed, the DB table would update with the same records. The solution would be to either delete the previous records using select method, drop the table if it exist or delete the database to prevent any altercations to the results if the program was to be run again. For optmization purposes, I made methods for the latter two solutions to tackle this, but decide to just drop the table and comment out the code that would delete the DB. This two methods would be faster than select and delete. Moreover, I search for ways to reduce runtime and upon searching https://docs.oracle.com/javase/8/docs/api/ I found that I could manual commit everytime there was a change to the SQLite database table. To optmize runtime, I disable AutoCommit, and implement the rollback method to prevent any issues with an exception being thrown as well as the commit method to manually commit changes at the end instead each time there was a change. Lastly I had hardcoded the file paths for the files I would be using or creating and decided that the user should have input as he or she might store the input file needed for this program elsewhere.
